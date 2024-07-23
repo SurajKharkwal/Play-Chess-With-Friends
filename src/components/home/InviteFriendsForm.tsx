@@ -21,7 +21,6 @@ import Link from "next/link";
 export default function InviteFriendsForm() {
   const [room, setRoom] = useState<"join" | "create">("create");
   const [roomId, setRoomId] = useState(nanoid());
-  const [password, setPassword] = useState("");
 
   useEffect(() => {
     if (room === "create") {
@@ -45,10 +44,6 @@ export default function InviteFriendsForm() {
   const handleRoom = () => {
     setRoom((prev) => (prev === "create" ? "join" : "create"));
   };
-  const playChessLink = useMemo(() => {
-    return `/play-chess?roomId=${roomId}&password=${password}`;
-  }, [roomId, password]);
-
   return (
     <Dialog>
       <DialogTrigger className={buttonVariants()}>
@@ -101,28 +96,13 @@ export default function InviteFriendsForm() {
               )}
             </section>
           </div>
-          <div className="grid w-full items-center gap-1.5">
-            <Label htmlFor="password">Password</Label>
-            <section className="flex gap-2 w-full flex-col items-center cursor-pointer">
-              <Input
-                type="password"
-                placeholder={
-                  room === "create" ? "Create Password" : "Enter Password"
-                }
-                id="password"
-                className="w-80"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </section>
-          </div>
         </form>
         <DialogFooter className="sm:justify-end gap-2">
           <Button onClick={handleRoom} variant={"outline"}>
             {room === "create" ? "Join Room" : "Create Room"}
           </Button>
           <Link
-            href={`/play-chess?roomId=${roomId}&password=${password}`}
+            href={`/play-chess?roomId=${roomId}`}
             className={buttonVariants()}
           >
             Play Game

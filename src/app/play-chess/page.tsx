@@ -1,5 +1,6 @@
 "use client";
 import { MaxWidth } from "@/components/ui/max-width";
+import useInitialGameData from "@/hooks/useInitialGameData";
 import { socket } from "@/socket";
 import { Chess } from "chess.ts";
 import { useEffect, useState } from "react";
@@ -9,45 +10,31 @@ import { Piece, Square } from "react-chessboard/dist/chessboard/types";
 export default function PlayChess({
   searchParams,
 }: {
-  searchParams: { [key: string]: string | undefined };
+  searchParams: { roomId: string };
 }) {
-  console.log(searchParams);
-
-  const [moves, setMoves] = useState<string[]>([]);
   const [game, setGame] = useState(new Chess());
-  const [boardWidth, setBoardWidth] = useState<number>(300);
+  const { roomId } = searchParams;
+  const { boardWidth, boardOrientation, myRole } = useInitialGameData(roomId);
 
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      setBoardWidth(window.innerWidth >= 500 ? 500 : 350);
-    }
-    socket.on("connect", () => {
-      console.log("Connection established");
-    });
-    socket.emit("create-room", searchParams);
-
-    socket.on("hello", (arg) => {
-      console.log(arg);
-    });
-  }, [searchParams]);
+  socket.on("make-move", (newFen) => {
+    setGame(new Chess(newFen));
+  });
 
   const onDrop = (sourceSquare: Square, targetSquare: Square, piece: Piece) => {
-    const newGame = new Chess(game.fen()); // Create a new instance to avoid direct mutation
+    if (myRole === "spectator") return false;
+    const newGame = new Chess(game.fen());
     const move = newGame.move({
       from: sourceSquare,
       to: targetSquare,
-      promotion: "q", // Assume promotion to queen for simplicity
+      promotion: "q",
     });
 
-    if (move === null) return false; // Illegal move
+    if (move === null) return false;
+
+    socket.emit("broadcast-move", newGame.fen(), roomId);
 
     setGame(newGame);
-    setMoves((prevMoves) => [...prevMoves, targetSquare]);
-    socket.emit("moves", move);
-
-    // Emit the move event to the server
-
-    return true; // Legal move
+    return true;
   };
 
   return (
@@ -68,6 +55,7 @@ export default function PlayChess({
             backgroundColor: "#ecfeff",
           }}
           boardWidth={boardWidth}
+          boardOrientation={boardOrientation}
           id="BasicBoard"
         />
       </section>

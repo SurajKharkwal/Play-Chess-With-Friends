@@ -21,6 +21,23 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/socket.ts", "src/socket.js", "server.js", "server.js", "src/app/api/route.js", "src/app/test/page.jsx"],
-  "exclude": ["node_modules"]
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    "src/app/socket.ts",
+    "src/socket.js",
+    "server.js",
+    "server.js",
+    "src/app/api/route.js",
+    "src/app/test/page.jsx"
+  ],
+  "exclude": ["node_modules"],
+  "ts-node": {
+    "transpileOnly": true,
+    "compilerOptions": {
+      "module": "commonjs"
+    }
+  }
 }
