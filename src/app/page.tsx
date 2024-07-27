@@ -3,6 +3,7 @@ import ChessboardHomeUI from "@/components/home/chess-ui";
 import InviteFriendsForm from "@/components/home/InviteFriendsForm";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { MaxWidth } from "@/components/ui/max-width";
+import { nanoid } from "nanoid";
 import Link from "next/link";
 import { Chessboard } from "react-chessboard";
 
@@ -20,9 +21,12 @@ export default function Home() {
       </section>
       <section className=" flex  gap-4">
         <InviteFriendsForm />
-        <Link href={""} className={buttonVariants({ variant: "outline" })}>
+        {/* <Link
+          href={`/play-chess?isPrivate=${false}`}
+          className={buttonVariants({ variant: "outline" })}
+        >
           Play With Random
-        </Link>
+        </Link> */}
       </section>
       <section className="w-max">
         <ChessboardHomeUI />

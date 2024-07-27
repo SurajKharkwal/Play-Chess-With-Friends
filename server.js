@@ -1,7 +1,7 @@
-const { createServer } = require("node:http");
+const { createServer } = require("http");
 const next = require("next");
 const { Server } = require("socket.io");
-const { joinRoom, isMyTurn } = require("./server/handleSockets");
+const { joinRoom } = require("./server/handleSockets");
 
 const dev = process.env.NODE_ENV !== "production";
 const hostname = "localhost";
@@ -17,13 +17,27 @@ app.prepare().then(() => {
   const io = new Server(httpServer);
 
   io.on("connection", (socket) => {
-    socket.on("join-room", (roomId) => {
-      const res = joinRoom(roomId, Rooms, socket.id);
-      socket.join(roomId);
-      io.to(socket.id).emit("my-role", res);
+    socket.on("join-room", (roomId, isPrivate) => {
+      const res = joinRoom(roomId, Rooms, socket.id, isPrivate === "true");
+
+      socket.join(res.roomId);
+
+      io.to(res.roomId).emit("players-joined", res.player);
+      io.to(socket.id).emit("my-role", res.player, res.roomId);
     });
-    socket.on("broadcast-move", (fenString, roomId) => {
-      socket.to(roomId).emit("make-move", fenString);
+
+    socket.on("make-move", (fenString, roomId, move) => {
+      io.to(roomId).emit("cast-move", fenString, move);
+    });
+
+    socket.on("send-message", (roomId, messageObj) => {
+      const target = messageObj.to === "white"
+        ? Rooms[roomId].players.white
+        : messageObj.to === "black"
+        ? Rooms[roomId].players.black
+        : roomId;
+
+      socket.to(target).emit("receive-message", messageObj);
     });
   });
 

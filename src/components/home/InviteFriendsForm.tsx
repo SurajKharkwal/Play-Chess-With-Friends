@@ -102,7 +102,7 @@ export default function InviteFriendsForm() {
             {room === "create" ? "Join Room" : "Create Room"}
           </Button>
           <Link
-            href={`/play-chess?roomId=${roomId}`}
+            href={`/play-chess?tempId=${roomId}&isPrivate=${true}`}
             className={buttonVariants()}
           >
             Play Game

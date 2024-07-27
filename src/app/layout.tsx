@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Chakra_Petch } from "next/font/google";
+import { Toaster } from "@/components/ui/toaster";
 
 import "./globals.css";
 import { MaxWidth } from "@/components/ui/max-width";
@@ -33,6 +34,7 @@ export default function RootLayout({
         )}
       >
         <NextTopLoader />
+        <Toaster />
         <Navbar />
         <MaxWidth className="h-full " size={"lg"}>
           {children}
